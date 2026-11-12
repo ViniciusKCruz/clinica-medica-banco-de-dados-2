@@ -1,4 +1,4 @@
-# Sistema de Consulta Médica — Etapa 1 (Pessoa 1)
+# Sistema de Consulta Médica
 
 Projeto Maven para Eclipse com JPA/Hibernate, alinhado ao DER/UML de consulta médica.
 
@@ -69,16 +69,3 @@ mvn -q compile exec:java
 ```
 
 Saída esperada: `=== Etapa 1 OK (Consulta Médica) ===`
-
-## Publicar no GitHub (você faz o push)
-
-Na pasta deste projeto:
-
-```bash
-git init
-git add .
-git commit -m "Etapa 1 Pessoa 1: entidades base JPA da consulta médica"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-git push -u origin main
-```
