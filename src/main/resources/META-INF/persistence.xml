@@ -6,8 +6,9 @@
              version="2.2">
 
     <!--
-        Unidade principal (MySQL).
-        Ajuste url, user e password conforme o seu SGBD.
+        Unidade principal (PostgreSQL).
+        Crie o database no pgAdmin/psql antes: CREATE DATABASE sistema_consulta_medica;
+        Ajuste user e password conforme o seu SGBD.
     -->
     <persistence-unit name="sistemaConsultaPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
@@ -17,21 +18,27 @@
         <class>br.com.sistemaconsulta.model.Medico</class>
 
         <properties>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/sistema_consulta_medica?createDatabaseIfNotExist=true&amp;useSSL=false&amp;serverTimezone=America/Bahia&amp;allowPublicKeyRetrieval=true"/>
-            <property name="javax.persistence.jdbc.user" value="root"/>
-            <property name="javax.persistence.jdbc.password" value="root"/>
+            <!-- Driver JDBC PostgreSQL -->
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+            <!-- URL do banco (porta padrão 5432) -->
+            <property name="javax.persistence.jdbc.url"
+                      value="jdbc:postgresql://localhost:5432/sistema_consulta_medica"/>
+
+            <!-- Credenciais do SGBD — altere para as suas -->
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+            <property name="javax.persistence.jdbc.password" value="postgres"/>
+
+            <!-- Dialeto SQL PostgreSQL (Hibernate) -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
+
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.connection.characterEncoding" value="utf8"/>
         </properties>
     </persistence-unit>
 
-    <!-- H2 em memória para validar sem MySQL instalado -->
+    <!-- H2 em memória para validar sem PostgreSQL instalado -->
     <persistence-unit name="sistemaConsultaH2PU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 

@@ -6,7 +6,7 @@ Projeto Maven para Eclipse com JPA/Hibernate, alinhado ao DER/UML de consulta m�
 
 | Item | Conteúdo |
 |------|----------|
-| Maven / Eclipse | `pom.xml` (Hibernate 5.6, MySQL, H2) |
+| Maven / Eclipse | `pom.xml` (Hibernate 5.6, PostgreSQL, H2) |
 | `persistence.xml` | Driver JDBC, dialeto SQL e credenciais |
 | Herança | `Pessoa` (abstrata, `@Inheritance JOINED`) → `Paciente`, `Medico` |
 | Embeddable | `Endereco` (`endereco`, `bairro`, `cidade`, `uf`) |
@@ -42,17 +42,23 @@ sistema-consulta-medica/
 
 Requisito: JDK 11+ e m2e (Maven Integration for Eclipse).
 
-## Configurar MySQL
+## Configurar PostgreSQL
 
-Edite `src/main/resources/META-INF/persistence.xml`:
+1. Crie o database (pgAdmin ou `psql`):
 
-- `javax.persistence.jdbc.url` → banco `sistema_consulta_medica`
-- `javax.persistence.jdbc.user` / `password`
+```sql
+CREATE DATABASE sistema_consulta_medica;
+```
+
+2. Edite `src/main/resources/META-INF/persistence.xml`:
+
+- `javax.persistence.jdbc.url` → `jdbc:postgresql://localhost:5432/sistema_consulta_medica`
+- `javax.persistence.jdbc.user` / `password` (padrão no arquivo: `postgres` / `postgres`)
 
 Unidades:
 
-- **`sistemaConsultaPU`** — MySQL (padrão)
-- **`sistemaConsultaH2PU`** — H2 em memória (teste sem MySQL)
+- **`sistemaConsultaPU`** — PostgreSQL (padrão)
+- **`sistemaConsultaH2PU`** — H2 em memória (teste sem PostgreSQL)
 
 ## Validar
 
