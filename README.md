@@ -1,0 +1,78 @@
+# Sistema de Consulta Médica — Etapa 1 (Pessoa 1)
+
+Projeto Maven para Eclipse com JPA/Hibernate, alinhado ao DER/UML de consulta médica.
+
+## Escopo desta etapa
+
+| Item | Conteúdo |
+|------|----------|
+| Maven / Eclipse | `pom.xml` (Hibernate 5.6, MySQL, H2) |
+| `persistence.xml` | Driver JDBC, dialeto SQL e credenciais |
+| Herança | `Pessoa` (abstrata, `@Inheritance JOINED`) → `Paciente`, `Medico` |
+| Embeddable | `Endereco` (`endereco`, `bairro`, `cidade`, `uf`) |
+| Enums | `StatusMedico`, `StatusPaciente`, `StatusConsulta`, `StatusFila`, `Prioridade` |
+
+> Consulta, Prontuario, Convenio, Clinica, FilaEspera e MedicoEspecialidade ficam para as próximas pessoas/etapas.
+
+## Estrutura
+
+```
+sistema-consulta-medica/
+├── pom.xml
+├── README.md
+└── src/main/
+    ├── java/br/com/sistemaconsulta/
+    │   ├── AppSmokeTest.java
+    │   ├── model/
+    │   │   ├── Pessoa.java
+    │   │   ├── Paciente.java
+    │   │   ├── Medico.java
+    │   │   ├── Endereco.java
+    │   │   └── enums/
+    │   └── util/JpaUtil.java
+    └── resources/META-INF/persistence.xml
+```
+
+## Importar no Eclipse
+
+1. **File → Import… → Maven → Existing Maven Projects**
+2. Selecione a pasta `sistema-consulta-medica`
+3. Confirme o `pom.xml` → **Finish**
+4. Aguarde o download das dependências
+
+Requisito: JDK 11+ e m2e (Maven Integration for Eclipse).
+
+## Configurar MySQL
+
+Edite `src/main/resources/META-INF/persistence.xml`:
+
+- `javax.persistence.jdbc.url` → banco `sistema_consulta_medica`
+- `javax.persistence.jdbc.user` / `password`
+
+Unidades:
+
+- **`sistemaConsultaPU`** — MySQL (padrão)
+- **`sistemaConsultaH2PU`** — H2 em memória (teste sem MySQL)
+
+## Validar
+
+Eclipse: `AppSmokeTest` → **Run As → Java Application**
+
+```bash
+mvn -q compile exec:java
+```
+
+Saída esperada: `=== Etapa 1 OK (Consulta Médica) ===`
+
+## Publicar no GitHub (você faz o push)
+
+Na pasta deste projeto:
+
+```bash
+git init
+git add .
+git commit -m "Etapa 1 Pessoa 1: entidades base JPA da consulta médica"
+git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+git push -u origin main
+```
