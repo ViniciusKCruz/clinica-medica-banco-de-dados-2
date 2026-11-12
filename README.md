@@ -12,8 +12,6 @@ Projeto Maven para Eclipse com JPA/Hibernate, alinhado ao DER/UML de consulta m√
 | Embeddable | `Endereco` (`endereco`, `bairro`, `cidade`, `uf`) |
 | Enums | `StatusMedico`, `StatusPaciente`, `StatusConsulta`, `StatusFila`, `Prioridade` |
 
-> Consulta, Prontuario, Convenio, Clinica, FilaEspera e MedicoEspecialidade ficam para as pr√≥ximas pessoas/etapas.
-
 ## Estrutura
 
 ```
