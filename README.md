@@ -48,10 +48,7 @@ Requisito: JDK 11+ e m2e (Maven Integration for Eclipse).
 CREATE DATABASE sistema_consulta_medica;
 ```
 
-2. Edite `src/main/resources/META-INF/persistence.xml`:
-
-- `javax.persistence.jdbc.url` → `jdbc:postgresql://localhost:5432/sistema_consulta_medica`
-- `javax.persistence.jdbc.user` / `password` (padrão no arquivo: `postgres` / `postgres`)
+2. Copie `.env.example` para `.env` na raiz e preencha `DB_URL`, `DB_USER` e `DB_PASSWORD`. Variáveis de ambiente têm prioridade. O `.env` não é versionado; use a raiz do projeto como diretório de execução.
 
 Unidades:
 
@@ -60,10 +57,8 @@ Unidades:
 
 ## Validar
 
-Eclipse: `AppSmokeTest` → **Run As → Java Application**
+Eclipse: `App` → **Run As → Java Application**
 
 ```bash
 mvn -q compile exec:java
 ```
-
-Saída esperada: `=== Etapa 1 OK (Consulta Médica) ===`

@@ -3,14 +3,13 @@ package br.com.sistemaconsulta.util;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Fábrica simples de {@link EntityManager} para a Etapa 1 e etapas seguintes.
- */
+/** Mantem uma fabrica independente para cada unidade de persistencia. */
 public final class JpaUtil {
-
     private static final String DEFAULT_PU = "sistemaConsultaPU";
-    private static EntityManagerFactory emf;
+    private static final Map<String, EntityManagerFactory> FACTORIES = new HashMap<>();
 
     private JpaUtil() {
     }
@@ -20,10 +19,14 @@ public final class JpaUtil {
     }
 
     public static synchronized EntityManagerFactory getEntityManagerFactory(String persistenceUnit) {
-        if (emf == null || !emf.isOpen()) {
-            emf = Persistence.createEntityManagerFactory(persistenceUnit);
+        EntityManagerFactory factory = FACTORIES.get(persistenceUnit);
+        if (factory == null || !factory.isOpen()) {
+            factory = DEFAULT_PU.equals(persistenceUnit)
+                    ? Persistence.createEntityManagerFactory(persistenceUnit, DatabaseConfig.load())
+                    : Persistence.createEntityManagerFactory(persistenceUnit);
+            FACTORIES.put(persistenceUnit, factory);
         }
-        return emf;
+        return factory;
     }
 
     public static EntityManager getEntityManager() {
@@ -35,9 +38,14 @@ public final class JpaUtil {
     }
 
     public static synchronized void close() {
-        if (emf != null && emf.isOpen()) {
-            emf.close();
+        try {
+            for (EntityManagerFactory factory : FACTORIES.values()) {
+                if (factory.isOpen()) {
+                    factory.close();
+                }
+            }
+        } finally {
+            FACTORIES.clear();
         }
-        emf = null;
     }
 }
