@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
@@ -45,6 +47,23 @@ public abstract class Pessoa implements Serializable {
         this.cpf = cpf;
         this.endereco = endereco;
     }
+
+    @PrePersist
+    @PreUpdate
+    private void validarPessoa() {
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("Nome é obrigatório e não pode estar vazio.");
+        }
+        if (nome.length() > 45) {
+            throw new IllegalArgumentException("Nome deve ter no máximo 45 caracteres.");
+        }
+        if (cpf == null || !cpf.matches("[0-9]{11}")) {
+            throw new IllegalArgumentException("CPF deve conter exatamente 11 dígitos, sem pontuação.");
+        }
+        validarDadosEspecificos();
+    }
+
+    protected abstract void validarDadosEspecificos();
 
     public Long getId() {
         return id;

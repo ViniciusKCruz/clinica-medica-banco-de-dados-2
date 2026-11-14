@@ -1,8 +1,8 @@
 package br.com.sistemaconsulta;
 
 import br.com.sistemaconsulta.util.JpaUtil;
+import br.com.sistemaconsulta.seed.DataSeeder;
 
-/** Verifica a conexao e cria/atualiza as tabelas antes de encerrar. */
 public final class App {
     private App() {
     }
@@ -11,6 +11,10 @@ public final class App {
         try {
             JpaUtil.getEntityManagerFactory();
             System.out.println("PostgreSQL conectado; tabelas criadas/atualizadas com sucesso.");
+            boolean criada = new DataSeeder().popular();
+            System.out.println(criada
+                    ? "Carga criada: 5 clinicas, 100 especialidades, 200 pacientes e 2000 consultas, com dados de apoio."
+                    : "O banco ja possui dados; carga nao executada.");
         } finally {
             JpaUtil.close();
         }

@@ -75,6 +75,13 @@ public class Medico extends Pessoa {
         return statusAtual;
     }
 
+    @Override
+    protected void validarDadosEspecificos() {
+        if (statusAtual == null) {
+            throw new IllegalArgumentException("Status do médico é obrigatório.");
+        }
+    }
+
     public void setStatusAtual(StatusMedico statusAtual) {
         this.statusAtual = statusAtual;
     }
@@ -86,6 +93,7 @@ public class Medico extends Pessoa {
     public void setSalario(BigDecimal salario) {
         this.salario = salario;
     }
+
     public List<MedicoEspecialidade> getEspecialidades() {
         return Collections.unmodifiableList(especialidades);
     }

@@ -1,0 +1,60 @@
+# Catalogo de referencia para o Datafaker.
+# https://www.datafaker.net/documentation/getting-started/
+pt-BR:
+  faker:
+    clinica:
+      especialidade:
+        - Cardiologia
+        - Pediatria
+        - Clínica médica
+        - Dermatologia
+        - Neurologia
+        - Ortopedia
+        - Oftalmologia
+        - Psiquiatria
+        - Geriatria
+        - Gastroenterologia
+        - Endocrinologia
+        - Pneumologia
+        - Reumatologia
+        - Nefrologia
+        - Urologia
+        - Hematologia
+        - Infectologia
+        - Oncologia
+        - Alergologia
+        - Medicina de família
+      queixa_principal:
+        - Dor de cabeça recorrente
+        - Tosse persistente
+        - Cansaço ao realizar atividades diárias
+        - Dor nas articulações
+        - Desconforto abdominal
+        - Congestão nasal
+        - Dor de garganta
+        - Dificuldade para dormir
+        - Dor na região lombar
+        - Coceira na pele
+        - Tontura ocasional
+        - Retorno para avaliação de exames
+        - Acompanhamento de condição crônica
+        - Avaliação preventiva sem queixas atuais
+      diagnostico:
+        - Cefaleia tensional
+        - Rinite alérgica
+        - Lombalgia
+        - Dermatite de contato
+        - Infecção das vias aéreas superiores
+        - Dor articular em investigação
+        - Distúrbio do sono em avaliação
+        - Desconforto abdominal em investigação
+        - Hipertensão arterial em acompanhamento
+        - Diabetes em acompanhamento
+        - Fadiga em investigação
+        - Avaliação preventiva sem alterações relevantes
+        - Quadro clínico em acompanhamento
+        - Sem diagnóstico conclusivo neste atendimento
+      prescricao_medica:
+        - Orientações gerais registradas no prontuário.
+        - Retorno para reavaliação e acompanhamento da evolução.
+        - Encaminhamento para avaliação especializada.

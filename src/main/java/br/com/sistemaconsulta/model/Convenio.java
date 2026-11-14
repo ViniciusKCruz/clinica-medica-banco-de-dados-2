@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +35,14 @@ public class Convenio {
     private List<Paciente> pacientes = new ArrayList<>();
 
     public Convenio() {
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void validarConvenio() {
+        if (cnpj != null && !cnpj.matches("[0-9]{14}")) {
+            throw new IllegalArgumentException("CNPJ deve conter exatamente 14 dígitos, sem pontuação.");
+        }
     }
 
     public Long getId() {

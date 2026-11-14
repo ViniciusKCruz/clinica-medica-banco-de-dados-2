@@ -60,9 +60,17 @@ public class Paciente extends Pessoa {
         return statusPaciente;
     }
 
+    @Override
+    protected void validarDadosEspecificos() {
+        if (statusPaciente == null) {
+            throw new IllegalArgumentException("Status do paciente é obrigatório.");
+        }
+    }
+
     public void setStatusPaciente(StatusPaciente statusPaciente) {
         this.statusPaciente = statusPaciente;
     }
+
     public List<Consulta> getConsultas() {
         return Collections.unmodifiableList(consultas);
     }
