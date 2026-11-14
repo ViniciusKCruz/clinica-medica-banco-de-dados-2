@@ -36,7 +36,7 @@ final class DatabaseConfig {
         if (value == null) {
             value = localFile.apply(key);
         }
-        if (value == null || value.isBlank()) {
+        if (value == null || value.trim().isEmpty()) {
             throw new IllegalStateException("Configuracao obrigatoria ausente ou vazia: " + key
                     + ". Defina a variavel de ambiente ou preencha o .env na raiz do projeto.");
         }

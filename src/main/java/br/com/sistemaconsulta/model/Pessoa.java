@@ -51,7 +51,7 @@ public abstract class Pessoa implements Serializable {
     @PrePersist
     @PreUpdate
     private void validarPessoa() {
-        if (nome == null || nome.isBlank()) {
+        if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome é obrigatório e não pode estar vazio.");
         }
         if (nome.length() > 45) {

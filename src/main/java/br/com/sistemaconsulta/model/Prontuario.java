@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -32,8 +33,8 @@ public class Prontuario {
     @Column(name = "data_registro")
     private LocalDateTime dataRegistro;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_consulta")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_consulta", nullable = false, unique = true)
     private Consulta consulta;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -91,12 +92,15 @@ public class Prontuario {
         if (this.consulta == valor) {
             return;
         }
+        if (valor != null && valor.getProntuario() != null && valor.getProntuario() != this) {
+            throw new IllegalArgumentException("A consulta já possui um prontuário.");
+        }
         if (this.consulta != null) {
-            this.consulta.removerProntuarios(this);
+            this.consulta.vincularProntuario(null);
         }
         this.consulta = valor;
         if (valor != null) {
-            valor.adicionarProntuarios(this);
+            valor.vincularProntuario(this);
         }
     }
 

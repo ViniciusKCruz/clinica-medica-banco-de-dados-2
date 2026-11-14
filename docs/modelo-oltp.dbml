@@ -1,0 +1,93 @@
+Project sistema_consulta_medica {
+  database_type: 'PostgreSQL'
+}
+
+Table pessoa {
+  id bigint [pk, increment]
+  nome varchar(45) [not null]
+  cpf varchar(11) [not null, unique]
+  endereco varchar(45)
+  bairro varchar(45)
+  cidade varchar(45)
+  uf varchar(2)
+}
+
+Table medico {
+  id_medico bigint [pk]
+  telefone varchar(20)
+  status_atual varchar(15) [not null]
+  salario decimal(10,2)
+}
+
+Table paciente {
+  id_paciente bigint [pk]
+  status_paciente varchar(45) [not null]
+  id_convenio bigint
+}
+
+Table convenio {
+  id_convenio bigint [pk, increment]
+  nome_convenio varchar(45)
+  cnpj varchar(14)
+  telefone_contato varchar(20)
+}
+
+Table medico_especialidade {
+  id_medico_especialidade bigint [pk, increment]
+  nome varchar(45)
+  descricao varchar(150)
+  id_medico bigint
+}
+
+Table consulta {
+  id_consulta bigint [pk, increment]
+  nome varchar(45)
+  horario timestamp
+  status_consulta varchar(45)
+  id_medico bigint
+  id_paciente bigint
+}
+
+Table prontuario {
+  id_prontuario bigint [pk, increment]
+  id_consulta bigint [not null, unique]
+  id_paciente bigint
+  id_medico bigint
+  queixa_principal varchar(200)
+  diagnostico varchar(200)
+  prescricao_medica varchar(400)
+  data_registro timestamp
+}
+
+Table fila_espera_consulta {
+  id_fila_espera_consulta bigint [pk, increment]
+  data_solicitacao timestamp
+  status_fila varchar(20)
+  prioridade varchar(45)
+  id_paciente bigint
+  id_medico bigint
+}
+
+Table clinica {
+  id_clinica bigint [pk, increment]
+  endereco varchar(45)
+  bairro varchar(45)
+  cidade varchar(45)
+  uf varchar(45)
+  id_paciente bigint
+  id_medico bigint
+}
+
+Ref pessoa_medico: pessoa.id - medico.id_medico
+Ref pessoa_paciente: pessoa.id - paciente.id_paciente
+Ref paciente_convenio: paciente.id_convenio > convenio.id_convenio
+Ref especialidade_medico: medico_especialidade.id_medico > medico.id_medico
+Ref consulta_medico: consulta.id_medico > medico.id_medico
+Ref consulta_paciente: consulta.id_paciente > paciente.id_paciente
+Ref consulta_prontuario: consulta.id_consulta - prontuario.id_consulta
+Ref prontuario_paciente: prontuario.id_paciente > paciente.id_paciente
+Ref prontuario_medico: prontuario.id_medico > medico.id_medico
+Ref fila_paciente: fila_espera_consulta.id_paciente > paciente.id_paciente
+Ref fila_medico: fila_espera_consulta.id_medico > medico.id_medico
+Ref clinica_paciente: clinica.id_paciente > paciente.id_paciente
+Ref clinica_medico: clinica.id_medico > medico.id_medico

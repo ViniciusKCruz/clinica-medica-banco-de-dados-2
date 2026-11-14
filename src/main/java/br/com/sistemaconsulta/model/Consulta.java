@@ -10,13 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import br.com.sistemaconsulta.model.enums.StatusConsulta;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Entity
 @Table(name = "consulta")
@@ -45,8 +42,8 @@ public class Consulta {
     @JoinColumn(name = "id_paciente")
     private Paciente paciente;
 
-    @OneToMany(mappedBy = "consulta")
-    private List<Prontuario> prontuarios = new ArrayList<>();
+    @OneToOne(mappedBy = "consulta", fetch = FetchType.LAZY)
+    private Prontuario prontuario;
 
     public Consulta() {
     }
@@ -113,18 +110,22 @@ public class Consulta {
         }
     }
 
-    public List<Prontuario> getProntuarios() {
-        return Collections.unmodifiableList(prontuarios);
+    public Prontuario getProntuario() {
+        return prontuario;
     }
 
-    void adicionarProntuarios(Prontuario valor) {
-        if (!prontuarios.contains(valor)) {
-            prontuarios.add(valor);
+    public void setProntuario(Prontuario valor) {
+        if (this.prontuario == valor) {
+            return;
+        }
+        if (valor == null) {
+            this.prontuario.setConsulta(null);
+        } else {
+            valor.setConsulta(this);
         }
     }
 
-    void removerProntuarios(Prontuario valor) {
-        prontuarios.remove(valor);
+    void vincularProntuario(Prontuario valor) {
+        this.prontuario = valor;
     }
-
 }
