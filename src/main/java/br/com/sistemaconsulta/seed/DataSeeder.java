@@ -51,7 +51,7 @@ public final class DataSeeder {
                 transacao.rollback();
                 return false;
             }
-            Set<String> cpfs = new HashSet<>(em.createQuery("select p.cpf from Pessoa p", String.class).getResultList());
+            Set<String> cpfs = new HashSet<>(em.createQuery("SELECT p.cpf FROM Pessoa p", String.class).getResultList());
             List<Convenio> convenios = criarConvenios(em);
             List<Medico> medicos = criarMedicos(em, cpfs);
             List<Paciente> pacientes = criarPacientes(em, cpfs, convenios);
@@ -80,7 +80,7 @@ public final class DataSeeder {
         String[] entidades = {"Pessoa", "Clinica", "Convenio", "MedicoEspecialidade",
                 "Consulta", "Prontuario", "FilaEsperaConsulta"};
         for (String entidade : entidades) {
-            if (!em.createQuery("select e.id from " + entidade + " e", Long.class)
+            if (!em.createQuery("SELECT e.id FROM " + entidade + " e", Long.class)
                     .setMaxResults(1).getResultList().isEmpty()) {
                 return true;
             }

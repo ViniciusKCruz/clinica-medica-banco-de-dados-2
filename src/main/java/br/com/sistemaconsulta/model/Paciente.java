@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -22,6 +23,8 @@ import br.com.sistemaconsulta.model.enums.StatusPaciente;
 @Entity
 @Table(name = "paciente")
 @PrimaryKeyJoinColumn(name = "id_paciente")
+@NamedQuery(name = "Paciente.porConvenio",
+        query = "SELECT p FROM Paciente p JOIN p.convenio c WHERE c.id = :convenioId ORDER BY p.nome, p.id")
 public class Paciente extends Pessoa {
 
     @OneToMany(mappedBy = "paciente")

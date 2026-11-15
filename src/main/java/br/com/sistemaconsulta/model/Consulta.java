@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import br.com.sistemaconsulta.model.enums.StatusConsulta;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "consulta")
+@NamedQuery(name = "Consulta.porStatus",
+        query = "SELECT c FROM Consulta c WHERE c.statusConsulta = :status ORDER BY c.horario, c.id")
 public class Consulta {
 
     @Id

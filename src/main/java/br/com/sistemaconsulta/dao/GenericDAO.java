@@ -65,7 +65,7 @@ public class GenericDAO<T, ID> {
         });
     }
 
-    private <R> R executar(Function<EntityManager, R> operacao) {
+    protected final <R> R executar(Function<EntityManager, R> operacao) {
         EntityManager em = factory.createEntityManager();
         EntityTransaction transacao = em.getTransaction();
         try {
