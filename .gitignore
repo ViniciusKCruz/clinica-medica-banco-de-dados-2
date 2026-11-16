@@ -10,3 +10,8 @@ target/
 *.swp
 .factorypath
 bin/
+
+# Configuracoes locais e credenciais
+.env
+.env.*
+!.env.example

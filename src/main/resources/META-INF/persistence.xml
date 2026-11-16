@@ -2,13 +2,13 @@
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
-             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
-             version="2.2">
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
 
     <!--
         Unidade principal (PostgreSQL).
         Crie o database no pgAdmin/psql antes: CREATE DATABASE sistema_consulta_medica;
-        Ajuste user e password conforme o seu SGBD.
+        Configure DB_URL, DB_USER e DB_PASSWORD no ambiente ou no .env local.
     -->
     <persistence-unit name="sistemaConsultaPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
@@ -16,46 +16,26 @@
         <class>br.com.sistemaconsulta.model.Pessoa</class>
         <class>br.com.sistemaconsulta.model.Paciente</class>
         <class>br.com.sistemaconsulta.model.Medico</class>
+        <class>br.com.sistemaconsulta.model.Convenio</class>
+        <class>br.com.sistemaconsulta.model.MedicoEspecialidade</class>
+        <class>br.com.sistemaconsulta.model.Consulta</class>
+        <class>br.com.sistemaconsulta.model.Prontuario</class>
+        <class>br.com.sistemaconsulta.model.FilaEsperaConsulta</class>
+        <class>br.com.sistemaconsulta.model.Clinica</class>
 
         <properties>
             <!-- Driver JDBC PostgreSQL -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 
-            <!-- URL do banco (porta padrão 5432) -->
-            <property name="javax.persistence.jdbc.url"
-                      value="jdbc:postgresql://localhost:5432/sistema_consulta_medica"/>
-
-            <!-- Credenciais do SGBD — altere para as suas -->
-            <property name="javax.persistence.jdbc.user" value="postgres"/>
-            <property name="javax.persistence.jdbc.password" value="postgres"/>
+            <!-- URL e credenciais fornecidas pelo JpaUtil via ambiente/.env. -->
 
             <!-- Dialeto SQL PostgreSQL (Hibernate) -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect"/>
 
             <property name="hibernate.hbm2ddl.auto" value="update"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <!-- H2 em memória para validar sem PostgreSQL instalado -->
-    <persistence-unit name="sistemaConsultaH2PU" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-
-        <class>br.com.sistemaconsulta.model.Pessoa</class>
-        <class>br.com.sistemaconsulta.model.Paciente</class>
-        <class>br.com.sistemaconsulta.model.Medico</class>
-
-        <properties>
-            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:sistema_consulta;DB_CLOSE_DELAY=-1"/>
-            <property name="javax.persistence.jdbc.user" value="sa"/>
-            <property name="javax.persistence.jdbc.password" value=""/>
-
-            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.halt_on_error" value="true"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
         </properties>
     </persistence-unit>
 
