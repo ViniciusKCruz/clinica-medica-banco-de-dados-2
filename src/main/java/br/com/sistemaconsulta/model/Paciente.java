@@ -24,7 +24,7 @@ import br.com.sistemaconsulta.model.enums.StatusPaciente;
 @Table(name = "paciente")
 @PrimaryKeyJoinColumn(name = "id_paciente")
 @NamedQuery(name = "Paciente.porConvenio",
-        query = "SELECT p FROM Paciente p JOIN p.convenio c WHERE c.id = :convenioId ORDER BY p.nome, p.id")
+        query = "SELECT p FROM Paciente p JOIN FETCH p.convenio c WHERE c.id = :convenioId ORDER BY p.nome, p.id")
 public class Paciente extends Pessoa {
 
     @OneToMany(mappedBy = "paciente")

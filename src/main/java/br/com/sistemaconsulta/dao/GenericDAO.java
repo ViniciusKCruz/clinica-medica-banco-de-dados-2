@@ -1,10 +1,12 @@
 package br.com.sistemaconsulta.dao;
 
 import br.com.sistemaconsulta.util.JpaUtil;
+import br.com.sistemaconsulta.dao.dto.Pagina;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -56,13 +58,59 @@ public class GenericDAO<T, ID> {
     }
 
     public List<T> buscarTodos() {
-        return executar(em -> {
-            CriteriaBuilder builder = em.getCriteriaBuilder();
-            CriteriaQuery<T> consulta = builder.createQuery(entidade);
-            Root<T> registro = consulta.from(entidade);
-            consulta.select(registro).orderBy(builder.asc(registro.get("id")));
-            return em.createQuery(consulta).getResultList();
-        });
+        return executar(em -> criarConsultaListagem(em).getResultList());
+    }
+
+    public List<T> buscarPagina(int pagina, int tamanho) {
+        validarPaginacao(pagina, tamanho);
+        return executar(em -> criarConsultaPagina(em)
+                .setFirstResult(pagina * tamanho).setMaxResults(tamanho).getResultList());
+    }
+
+    public long contar() {
+        return executar(em -> criarConsultaContagem(em).getSingleResult());
+    }
+
+    public Pagina<T> consultarPagina(int pagina, int tamanho) {
+        validarPaginacao(pagina, tamanho);
+        return executar(em -> paginar(criarConsultaPagina(em), criarConsultaContagem(em), pagina, tamanho));
+    }
+
+    protected TypedQuery<T> criarConsultaListagem(EntityManager em) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<T> consulta = builder.createQuery(entidade);
+        Root<T> registro = consulta.from(entidade);
+        consulta.select(registro).orderBy(builder.asc(registro.get("id")));
+        return em.createQuery(consulta);
+    }
+
+    protected TypedQuery<T> criarConsultaPagina(EntityManager em) {
+        return criarConsultaListagem(em);
+    }
+
+    private TypedQuery<Long> criarConsultaContagem(EntityManager em) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> consulta = builder.createQuery(Long.class);
+        consulta.select(builder.count(consulta.from(entidade)));
+        return em.createQuery(consulta);
+    }
+
+    protected final <R> R primeiroOuNulo(TypedQuery<R> consulta) {
+        List<R> resultados = consulta.setMaxResults(1).getResultList();
+        return resultados.isEmpty() ? null : resultados.get(0);
+    }
+
+    protected final <R> Pagina<R> paginar(TypedQuery<R> consulta, TypedQuery<Long> contagem,
+                                         int pagina, int tamanho) {
+        validarPaginacao(pagina, tamanho);
+        List<R> registros = consulta.setFirstResult(pagina * tamanho).setMaxResults(tamanho).getResultList();
+        return new Pagina<>(registros, contagem.getSingleResult(), tamanho);
+    }
+
+    protected static void validarPaginacao(int pagina, int tamanho) {
+        if (pagina < 0 || tamanho <= 0 || (long) pagina * tamanho > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Informe pagina nao negativa e tamanho positivo, dentro do limite de paginacao.");
+        }
     }
 
     protected final <R> R executar(Function<EntityManager, R> operacao) {

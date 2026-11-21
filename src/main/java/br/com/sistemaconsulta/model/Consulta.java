@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "consulta")
 @NamedQuery(name = "Consulta.porStatus",
-        query = "SELECT c FROM Consulta c WHERE c.statusConsulta = :status ORDER BY c.horario, c.id")
+        query = "SELECT c FROM Consulta c LEFT JOIN FETCH c.paciente LEFT JOIN FETCH c.medico "
+                + "LEFT JOIN FETCH c.prontuario WHERE c.statusConsulta = :status ORDER BY c.horario, c.id")
 public class Consulta {
 
     @Id
@@ -45,7 +46,7 @@ public class Consulta {
     @JoinColumn(name = "id_paciente")
     private Paciente paciente;
 
-    @OneToOne(mappedBy = "consulta", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "consulta")
     private Prontuario prontuario;
 
     public Consulta() {
