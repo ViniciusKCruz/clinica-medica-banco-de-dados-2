@@ -1,66 +1,47 @@
 # Sistema de Consulta Médica
 
-Projeto Maven para Eclipse com JPA/Hibernate, alinhado ao DER/UML de consulta médica.
+Sistema OLTP em Java 8 com interface console, JPA 2.1, Hibernate 5.2.10.Final e PostgreSQL.
 
-## Escopo desta etapa
+## Requisitos
 
-| Item | Conteúdo |
-|------|----------|
-| Maven / Eclipse | `pom.xml` (JPA 2.1, Hibernate 5.2.10.Final, PostgreSQL) |
-| `persistence.xml` | Driver JDBC, dialeto SQL e credenciais |
-| Herança | `Pessoa` (abstrata, `@Inheritance JOINED`) → `Paciente`, `Medico` |
-| Embeddable | `Endereco` (`endereco`, `bairro`, `cidade`, `uf`) |
-| Enums | `StatusMedico`, `StatusPaciente`, `StatusConsulta`, `StatusFila`, `Prioridade` |
+- JDK 8, Maven e PostgreSQL.
+- Para importar no Eclipse: **File → Import → Maven → Existing Maven Projects**.
 
-## Estrutura
+## Configuração e execução
 
-```
-sistema-consulta-medica/
-├── pom.xml
-├── README.md
-└── src/main/
-    ├── java/br/com/sistemaconsulta/
-    │   ├── App.java
-    │   ├── model/
-    │   │   ├── Pessoa.java
-    │   │   ├── Paciente.java
-    │   │   ├── Medico.java
-    │   │   ├── Endereco.java
-    │   │   └── enums/
-    │   └── util/JpaUtil.java
-    └── resources/META-INF/persistence.xml
-```
-
-## Importar no Eclipse
-
-1. **File → Import… → Maven → Existing Maven Projects**
-2. Selecione a pasta `sistema-consulta-medica`
-3. Confirme o `pom.xml` → **Finish**
-4. Aguarde o download das dependências
-
-Requisito: JDK 8 e m2e (Maven Integration for Eclipse).
-
-## Configurar PostgreSQL
-
-1. Crie o database (pgAdmin ou `psql`):
+1. Crie o banco:
 
 ```sql
 CREATE DATABASE sistema_consulta_medica;
 ```
 
-2. Copie `.env.example` para `.env` na raiz e preencha `DB_URL`, `DB_USER` e `DB_PASSWORD`. Variáveis de ambiente têm prioridade. O `.env` não é versionado; use a raiz do projeto como diretório de execução.
+2. Copie a configuração de exemplo:
 
-Unidades:
+```bash
+cp .env.example .env
+```
 
-- **`sistemaConsultaPU`** — PostgreSQL (padrão)
-
-## Validar
-
-Eclipse: `App` → **Run As → Java Application**
+3. Preencha `DB_URL`, `DB_USER` e `DB_PASSWORD` no `.env`. Variáveis de ambiente têm prioridade.
+4. Execute na raiz do projeto:
 
 ```bash
 mvn -q compile exec:java
 ```
-## Modelagem
 
-O diagrama na linguagem do dbdiagram.io está em [docs/modelo-oltp.dbml](docs/modelo-oltp.dbml).
+Na IDE, execute `br.com.sistemaconsulta.App` com JDK 8 e a raiz do projeto como diretório de trabalho.
+
+A aplicação atualiza as tabelas e, se o banco estiver vazio, gera 200 pacientes, 100 especialidades,
+5 clínicas e 2.000 consultas, além dos dados de apoio. Os novos endereços têm capital e UF coerentes.
+
+## Funcionalidades
+
+- **Pacientes:** CRUD, vínculo com convênio e buscas por nome ou convênio.
+- **Médicos:** CRUD, resumo de salários por status e salários acima da média.
+- **Consultas e relatórios:** buscas por status, período ou médico; filtros combinados; detalhes com
+  prontuário; totais por status e por médico. Inclui consultas JPQL, NamedQuery e Criteria API.
+
+Listagens e buscas usam páginas de 10 registros. Até 10 resultados são exibidos diretamente.
+Na navegação: `1` avança, `2` retorna à página anterior e `0` volta ao menu. .
+
+## Modelagem
+[Modelo relacional OLTP](docs/modelo-oltp.dbml) · [DDL PostgreSQL](docs/sql/oltp.sql)
