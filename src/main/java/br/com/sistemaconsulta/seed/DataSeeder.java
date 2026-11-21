@@ -189,9 +189,11 @@ public final class DataSeeder {
     }
 
     private Endereco endereco() {
-        return new Endereco(limitar(faker.address().streetAddress(), 45),
+        UnidadeFederativa[] estados = UnidadeFederativa.values();
+        UnidadeFederativa uf = estados[random.nextInt(estados.length)];
+        return new Endereco(limitar("Rua " + faker.name().lastName() + ", " + (random.nextInt(9999) + 1), 45),
                 limitar("Bairro " + faker.name().lastName(), 45),
-                limitar(faker.address().city(), 45), faker.address().stateAbbr());
+                uf.getCapital(), uf.name());
     }
 
     private String telefone() {
