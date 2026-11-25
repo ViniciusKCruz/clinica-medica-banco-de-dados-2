@@ -45,5 +45,4 @@ CREATE TABLE staging.fila_espera_consulta (
     extraido_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON SCHEMA staging IS 'Dados brutos de public; transformação e carga são responsabilidade do ETL.';
 COMMIT;

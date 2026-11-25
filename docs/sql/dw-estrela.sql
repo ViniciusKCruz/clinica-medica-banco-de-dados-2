@@ -75,13 +75,4 @@ CREATE INDEX ix_fato_paciente ON dw.fato_consulta (sk_paciente);
 CREATE INDEX ix_fato_medico ON dw.fato_consulta (sk_medico);
 CREATE INDEX ix_fato_clinica ON dw.fato_consulta (sk_clinica);
 
-COMMENT ON TABLE dw.fato_consulta IS 'Uma linha por consulta, inclusive cancelada; ID de origem impede duplicidade na carga incremental.';
-COMMENT ON COLUMN dw.fato_consulta.status_consulta IS 'Preserva o status do OLTP, incluindo CONCLUIDA; filtrar o status nas análises de atendimentos realizados.';
-COMMENT ON COLUMN dw.fato_consulta.valor_bruto IS 'NULL enquanto não houver fonte financeira; zero significa valor conhecido igual a zero.';
-COMMENT ON COLUMN dw.fato_consulta.tempo_espera_minutos IS 'NULL sem vínculo inequívoco entre consulta e fila; não inferir apenas por médico/paciente.';
-COMMENT ON COLUMN dw.dim_tempo.dia_semana IS 'ISO: 1 = segunda-feira; 7 = domingo.';
-COMMENT ON TABLE dw.dim_paciente IS 'SCD 2: vigência [data_inicio, data_fim); data_fim NULL na versão atual. ETL deve evitar sobreposições.';
-COMMENT ON COLUMN dw.dim_paciente.id_convenio_oltp IS 'Linhagem para detectar troca de convênio mesmo quando os nomes coincidem; não é FK para public.';
-COMMENT ON TABLE dw.dim_medico IS 'Uma combinação médico/especialidade por linha; cada consulta referencia somente uma combinação.';
-COMMENT ON COLUMN dw.fato_consulta.sk_clinica IS 'Usar membro NÃO INFORMADA quando o OLTP não identificar a clínica da consulta.';
 COMMIT;

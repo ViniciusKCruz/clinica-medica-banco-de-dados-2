@@ -86,12 +86,4 @@ CREATE INDEX ix_fato_paciente ON dw_snowflake.fato_consulta (sk_paciente);
 CREATE INDEX ix_fato_medico ON dw_snowflake.fato_consulta (sk_medico);
 CREATE INDEX ix_fato_clinica ON dw_snowflake.fato_consulta (sk_clinica);
 
-COMMENT ON TABLE dw_snowflake.fato_consulta IS 'Mesmo grão e mesmas medidas de dw.fato_consulta: uma linha por consulta do OLTP, inclusive cancelada.';
-COMMENT ON COLUMN dw_snowflake.fato_consulta.status_consulta IS 'Preserva o status do OLTP; atendimento realizado corresponde a CONCLUIDA.';
-COMMENT ON COLUMN dw_snowflake.fato_consulta.valor_bruto IS 'NULL sem fonte financeira; aplicar a mesma regra de dw.';
-COMMENT ON COLUMN dw_snowflake.fato_consulta.tempo_espera_minutos IS 'NULL sem vínculo inequívoco com a fila; aplicar a mesma regra de dw.';
-COMMENT ON COLUMN dw_snowflake.dim_tempo.dia_semana IS 'ISO: 1 = segunda-feira; 7 = domingo.';
-COMMENT ON TABLE dw_snowflake.dim_paciente IS 'SCD 2 com vigência [data_inicio, data_fim); ETL fecha a versão antiga ao trocar cidade/UF ou convênio.';
-COMMENT ON TABLE dw_snowflake.dim_medico IS 'Uma combinação médico/especialidade por linha; cada consulta aponta para apenas uma combinação.';
-COMMENT ON COLUMN dw_snowflake.fato_consulta.sk_clinica IS 'Usar membro NÃO INFORMADA se a clínica da consulta não puder ser identificada.';
 COMMIT;
