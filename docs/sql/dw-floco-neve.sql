@@ -1,0 +1,97 @@
+BEGIN;
+CREATE SCHEMA dw_snowflake;
+
+CREATE TABLE dw_snowflake.dim_tempo (
+    sk_tempo SERIAL PRIMARY KEY,
+    data_completa DATE NOT NULL UNIQUE,
+    dia SMALLINT NOT NULL CHECK (dia BETWEEN 1 AND 31),
+    mes SMALLINT NOT NULL CHECK (mes BETWEEN 1 AND 12),
+    trimestre SMALLINT NOT NULL CHECK (trimestre BETWEEN 1 AND 4),
+    semestre SMALLINT NOT NULL CHECK (semestre BETWEEN 1 AND 2),
+    ano SMALLINT NOT NULL,
+    dia_semana SMALLINT NOT NULL CHECK (dia_semana BETWEEN 1 AND 7)
+);
+
+CREATE TABLE dw_snowflake.dim_convenio (
+    sk_convenio SERIAL PRIMARY KEY,
+    id_convenio_oltp BIGINT UNIQUE,
+    nome_convenio VARCHAR(45) NOT NULL
+);
+
+CREATE TABLE dw_snowflake.dim_paciente (
+    sk_paciente SERIAL PRIMARY KEY,
+    id_paciente_oltp BIGINT,
+    nome VARCHAR(45) NOT NULL,
+    cpf VARCHAR(11),
+    status VARCHAR(45) NOT NULL,
+    cidade VARCHAR(45) NOT NULL,
+    uf VARCHAR(2) NOT NULL,
+    sk_convenio INTEGER NOT NULL REFERENCES dw_snowflake.dim_convenio (sk_convenio),
+    data_inicio DATE NOT NULL,
+    data_fim DATE,
+    atual BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT ck_paciente_vigencia CHECK (
+        (atual AND data_fim IS NULL)
+        OR (NOT atual AND data_fim IS NOT NULL AND data_fim >= data_inicio)
+    )
+);
+CREATE UNIQUE INDEX uq_paciente_atual ON dw_snowflake.dim_paciente (id_paciente_oltp) WHERE atual;
+CREATE INDEX ix_paciente_historico ON dw_snowflake.dim_paciente (id_paciente_oltp, data_inicio, data_fim);
+CREATE INDEX ix_paciente_convenio ON dw_snowflake.dim_paciente (sk_convenio);
+
+CREATE TABLE dw_snowflake.dim_especialidade (
+    sk_especialidade SERIAL PRIMARY KEY,
+    nome VARCHAR(45) NOT NULL UNIQUE
+);
+
+CREATE TABLE dw_snowflake.dim_medico (
+    sk_medico SERIAL PRIMARY KEY,
+    id_medico_oltp BIGINT,
+    nome VARCHAR(45) NOT NULL,
+    sk_especialidade INTEGER NOT NULL REFERENCES dw_snowflake.dim_especialidade (sk_especialidade),
+    cidade VARCHAR(45) NOT NULL,
+    uf VARCHAR(2) NOT NULL,
+    UNIQUE (id_medico_oltp, sk_especialidade)
+);
+CREATE INDEX ix_medico_especialidade ON dw_snowflake.dim_medico (sk_especialidade);
+
+CREATE TABLE dw_snowflake.dim_clinica (
+    sk_clinica SERIAL PRIMARY KEY,
+    id_clinica_oltp BIGINT UNIQUE,
+    bairro VARCHAR(45) NOT NULL,
+    cidade VARCHAR(45) NOT NULL,
+    uf VARCHAR(45) NOT NULL
+);
+
+CREATE TABLE dw_snowflake.fato_consulta (
+    id_consulta_oltp BIGINT PRIMARY KEY,
+    sk_tempo INTEGER NOT NULL REFERENCES dw_snowflake.dim_tempo (sk_tempo),
+    sk_paciente INTEGER NOT NULL REFERENCES dw_snowflake.dim_paciente (sk_paciente),
+    sk_medico INTEGER NOT NULL REFERENCES dw_snowflake.dim_medico (sk_medico),
+    sk_clinica INTEGER NOT NULL REFERENCES dw_snowflake.dim_clinica (sk_clinica),
+    status_consulta VARCHAR(45) NOT NULL,
+    qtd_consultas SMALLINT NOT NULL DEFAULT 1 CHECK (qtd_consultas = 1),
+    valor_bruto NUMERIC(12,2) CHECK (valor_bruto >= 0),
+    valor_desconto NUMERIC(12,2) CHECK (valor_desconto >= 0),
+    valor_liquido NUMERIC(12,2) CHECK (valor_liquido >= 0),
+    tempo_espera_minutos NUMERIC(12,2) CHECK (tempo_espera_minutos >= 0),
+    CONSTRAINT ck_fato_valores CHECK (
+        (valor_bruto IS NULL AND valor_desconto IS NULL AND valor_liquido IS NULL)
+        OR (valor_bruto IS NOT NULL AND valor_desconto IS NOT NULL AND valor_liquido IS NOT NULL
+            AND valor_desconto <= valor_bruto AND valor_liquido = valor_bruto - valor_desconto)
+    )
+);
+CREATE INDEX ix_fato_tempo ON dw_snowflake.fato_consulta (sk_tempo);
+CREATE INDEX ix_fato_paciente ON dw_snowflake.fato_consulta (sk_paciente);
+CREATE INDEX ix_fato_medico ON dw_snowflake.fato_consulta (sk_medico);
+CREATE INDEX ix_fato_clinica ON dw_snowflake.fato_consulta (sk_clinica);
+
+COMMENT ON TABLE dw_snowflake.fato_consulta IS 'Mesmo grão e mesmas medidas de dw.fato_consulta: uma linha por consulta do OLTP, inclusive cancelada.';
+COMMENT ON COLUMN dw_snowflake.fato_consulta.status_consulta IS 'Preserva o status do OLTP; atendimento realizado corresponde a CONCLUIDA.';
+COMMENT ON COLUMN dw_snowflake.fato_consulta.valor_bruto IS 'NULL sem fonte financeira; aplicar a mesma regra de dw.';
+COMMENT ON COLUMN dw_snowflake.fato_consulta.tempo_espera_minutos IS 'NULL sem vínculo inequívoco com a fila; aplicar a mesma regra de dw.';
+COMMENT ON COLUMN dw_snowflake.dim_tempo.dia_semana IS 'ISO: 1 = segunda-feira; 7 = domingo.';
+COMMENT ON TABLE dw_snowflake.dim_paciente IS 'SCD 2 com vigência [data_inicio, data_fim); ETL fecha a versão antiga ao trocar cidade/UF ou convênio.';
+COMMENT ON TABLE dw_snowflake.dim_medico IS 'Uma combinação médico/especialidade por linha; cada consulta aponta para apenas uma combinação.';
+COMMENT ON COLUMN dw_snowflake.fato_consulta.sk_clinica IS 'Usar membro NÃO INFORMADA se a clínica da consulta não puder ser identificada.';
+COMMIT;

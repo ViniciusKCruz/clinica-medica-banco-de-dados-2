@@ -1,0 +1,81 @@
+Project clinica_dw_snowflake {
+  database_type: 'PostgreSQL'
+}
+
+Table dw_snowflake.dim_tempo {
+  sk_tempo integer [pk, increment]
+  data_completa date [not null, unique]
+  dia smallint [not null]
+  mes smallint [not null]
+  trimestre smallint [not null]
+  semestre smallint [not null]
+  ano smallint [not null]
+  dia_semana smallint [not null]
+}
+
+Table dw_snowflake.dim_convenio {
+  sk_convenio integer [pk, increment]
+  id_convenio_oltp bigint [unique]
+  nome_convenio varchar(45) [not null]
+}
+
+Table dw_snowflake.dim_paciente {
+  sk_paciente integer [pk, increment]
+  id_paciente_oltp bigint
+  nome varchar(45) [not null]
+  cpf varchar(11)
+  status varchar(45) [not null]
+  cidade varchar(45) [not null]
+  uf varchar(2) [not null]
+  sk_convenio integer [not null]
+  data_inicio date [not null]
+  data_fim date
+  atual boolean [not null]
+}
+
+Table dw_snowflake.dim_especialidade {
+  sk_especialidade integer [pk, increment]
+  nome varchar(45) [not null, unique]
+}
+
+Table dw_snowflake.dim_medico {
+  sk_medico integer [pk, increment]
+  id_medico_oltp bigint
+  nome varchar(45) [not null]
+  sk_especialidade integer [not null]
+  cidade varchar(45) [not null]
+  uf varchar(2) [not null]
+
+  indexes {
+    (id_medico_oltp, sk_especialidade) [unique]
+  }
+}
+
+Table dw_snowflake.dim_clinica {
+  sk_clinica integer [pk, increment]
+  id_clinica_oltp bigint [unique]
+  bairro varchar(45) [not null]
+  cidade varchar(45) [not null]
+  uf varchar(45) [not null]
+}
+
+Table dw_snowflake.fato_consulta {
+  id_consulta_oltp bigint [pk]
+  sk_tempo integer [not null]
+  sk_paciente integer [not null]
+  sk_medico integer [not null]
+  sk_clinica integer [not null]
+  status_consulta varchar(45) [not null]
+  qtd_consultas smallint [not null]
+  valor_bruto numeric(12,2)
+  valor_desconto numeric(12,2)
+  valor_liquido numeric(12,2)
+  tempo_espera_minutos numeric(12,2)
+}
+
+Ref: dw_snowflake.dim_paciente.sk_convenio > dw_snowflake.dim_convenio.sk_convenio
+Ref: dw_snowflake.dim_medico.sk_especialidade > dw_snowflake.dim_especialidade.sk_especialidade
+Ref: dw_snowflake.fato_consulta.sk_tempo > dw_snowflake.dim_tempo.sk_tempo
+Ref: dw_snowflake.fato_consulta.sk_paciente > dw_snowflake.dim_paciente.sk_paciente
+Ref: dw_snowflake.fato_consulta.sk_medico > dw_snowflake.dim_medico.sk_medico
+Ref: dw_snowflake.fato_consulta.sk_clinica > dw_snowflake.dim_clinica.sk_clinica

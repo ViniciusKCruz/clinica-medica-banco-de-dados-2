@@ -1,0 +1,69 @@
+Project clinica_dw {
+  database_type: 'PostgreSQL'
+}
+
+Table dw.dim_tempo {
+  sk_tempo integer [pk, increment]
+  data_completa date [not null, unique]
+  dia smallint [not null]
+  mes smallint [not null]
+  trimestre smallint [not null]
+  semestre smallint [not null]
+  ano smallint [not null]
+  dia_semana smallint [not null]
+}
+
+Table dw.dim_paciente {
+  sk_paciente integer [pk, increment]
+  id_paciente_oltp bigint
+  nome varchar(45) [not null]
+  cpf varchar(11)
+  status varchar(45) [not null]
+  cidade varchar(45) [not null]
+  uf varchar(2) [not null]
+  id_convenio_oltp bigint
+  nome_convenio varchar(45) [not null]
+  data_inicio date [not null]
+  data_fim date
+  atual boolean [not null]
+}
+
+Table dw.dim_medico {
+  sk_medico integer [pk, increment]
+  id_medico_oltp bigint
+  nome varchar(45) [not null]
+  especialidade varchar(45) [not null]
+  cidade varchar(45) [not null]
+  uf varchar(2) [not null]
+
+  indexes {
+    (id_medico_oltp, especialidade) [unique]
+  }
+}
+
+Table dw.dim_clinica {
+  sk_clinica integer [pk, increment]
+  id_clinica_oltp bigint [unique]
+  bairro varchar(45) [not null]
+  cidade varchar(45) [not null]
+  uf varchar(45) [not null]
+}
+
+Table dw.fato_consulta {
+  id_consulta_oltp bigint [pk]
+  sk_tempo integer [not null]
+  sk_paciente integer [not null]
+  sk_medico integer [not null]
+  sk_clinica integer [not null]
+  status_consulta varchar(45) [not null]
+  qtd_consultas smallint [not null]
+  valor_bruto numeric(12,2)
+  valor_desconto numeric(12,2)
+  valor_liquido numeric(12,2)
+  tempo_espera_minutos numeric(12,2)
+}
+
+Ref: dw.fato_consulta.sk_tempo > dw.dim_tempo.sk_tempo
+Ref: dw.fato_consulta.sk_paciente > dw.dim_paciente.sk_paciente
+Ref: dw.fato_consulta.sk_medico > dw.dim_medico.sk_medico
+Ref: dw.fato_consulta.sk_clinica > dw.dim_clinica.sk_clinica
